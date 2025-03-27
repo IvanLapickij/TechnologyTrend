@@ -1,0 +1,14 @@
+INSERT INTO TechnologyTrends (ID, Name, Type, Company, Category, Year, Cost) VALUES
+(1, 'The Egg', 'Power bank', 'Enron', 'Sustainability', 2025, 19000.00);
+
+INSERT INTO TechnologyTrends (ID, Name, Type, Company, Category, Year, Cost) VALUES
+(2, 'Smart lock', 'Device', 'Lockly', 'IOT', 2025, 230.00);
+
+INSERT INTO TechnologyTrends (ID, Name, Type, Company, Category, Year, Cost) VALUES
+(3, 'Atto 3', 'Electric Car', 'BYD', 'Sustainability', 2024, 36000.00);
+
+INSERT INTO TechnologyTrends (ID, Name, Type, Company, Category, Year, Cost) VALUES
+(4, 'Neo', 'Drone', 'DJI', 'Robotics', 2024, 200.00);
+
+INSERT INTO TechnologyTrends (ID, Name, Type, Company, Category, Year, Cost) VALUES
+(5, 'Bixby', 'Software update', 'Samsung', 'AI', 2025, 0.00);

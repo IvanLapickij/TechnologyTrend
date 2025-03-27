@@ -1,0 +1,9 @@
+CREATE TABLE TechnologyTrends (
+    ID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Type VARCHAR(50),
+    Company VARCHAR(50),
+    Category VARCHAR(50),
+    Year INT,
+    Cost DECIMAL(10,2)
+);
