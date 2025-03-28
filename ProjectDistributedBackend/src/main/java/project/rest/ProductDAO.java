@@ -81,6 +81,22 @@ public enum ProductDAO {
         }
     }
     
+    
+    public void updateProduct(Product product) {
+        String query = "UPDATE products SET name = ?, type = ?, year = ?, cost = ?, categoryid = ? WHERE productid = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getType());
+            stmt.setInt(3, product.getYear());
+            stmt.setInt(4, product.getCost());
+            stmt.setInt(5, product.getCategoryid());
+            stmt.setInt(6, product.getProductid());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
     public void deleteProduct(int id) {
         String query = "DELETE FROM products WHERE productid = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
