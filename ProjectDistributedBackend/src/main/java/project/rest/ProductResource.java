@@ -25,6 +25,17 @@ public class ProductResource {
         return Response.ok(product).build();
     }
     
+    @GET
+    @Path("name/{name}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response getProductByName(@PathParam("name") String name){
+        List<Product> products = ProductDAO.INSTANCE.getProductByName(name);
+        if (products.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(products).build();
+    }
+    
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response addProduct(Product product) {

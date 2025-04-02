@@ -66,6 +66,29 @@ public enum ProductDAO {
         return null;
     }
     
+    public List<Product> getProductByName(String name) {
+        List<Product> products = new ArrayList<>();
+        String query = "SELECT * FROM products WHERE name = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, name);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductid(rs.getInt("productid"));
+                    product.setName(rs.getString("name"));
+                    product.setType(rs.getString("type"));
+                    product.setYear(rs.getInt("year"));
+                    product.setCost(rs.getInt("cost"));
+                    product.setCategoryid(rs.getInt("categoryid"));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+    
     public void addProduct(Product product) {
         String query = "INSERT INTO products (name, type, year, cost, categoryid) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
