@@ -34,21 +34,17 @@ public class ProductResource {
     @GET
     @Path("name/{name}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getProductByName(@PathParam("name") String name) {
+    public Response getProductByName(@PathParam("name") String name){
         List<Product> products = ProductDAO.INSTANCE.getProductByName(name);
         if (products.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(products).build();
+
+        ProductsWrapper wrapper = new ProductsWrapper();
+        wrapper.setProducts(products);
+        return Response.ok(wrapper).build();
     }
 
-    // Add a new product
-    @POST
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response addProduct(Product product) {
-        ProductDAO.INSTANCE.addProduct(product);
-        return Response.status(Response.Status.CREATED).build();
-    }
 
     // Update an existing product by ID
     @PUT
