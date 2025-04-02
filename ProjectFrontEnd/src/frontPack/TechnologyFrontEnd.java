@@ -8,22 +8,28 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
 public class TechnologyFrontEnd extends JFrame {
 
-    private JTextField txtGetName, txtDeleteId;
+    private JTextField txtGetName, txtDeleteId, txtName, txtType, txtYear, txtCost, txtCategory, txtCompanyId, txtCompanyName, txtCompanyYears, txtUpdateId;
     private JTable productTable;
     private DefaultTableModel tableModel;
+
+    // Button color definitions
+    private final Color Blue = new Color(70, 130, 180);
+    private final Color Red = new Color(220, 20, 60);
+    private final Color Green = new Color(34, 139, 34);
+    private final Color Orange = new Color(255, 140, 0);
+    private final Color colorPrint = new Color(255, 149, 237);
 
     public TechnologyFrontEnd() {
         super("Distributed Systems Frontend");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1100, 600);
+        setSize(1200, 800);
         setLocationRelativeTo(null);
 
         setJMenuBar(createMenuBar());
@@ -31,7 +37,7 @@ public class TechnologyFrontEnd extends JFrame {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setLeftComponent(createControlPanel());
         splitPane.setRightComponent(createTablePanel());
-        splitPane.setDividerLocation(280);
+        splitPane.setDividerLocation(450);
         getContentPane().add(splitPane);
 
         loadAllProducts();
@@ -55,44 +61,128 @@ public class TechnologyFrontEnd extends JFrame {
 
     private JPanel createControlPanel() {
         JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
         panel.setBackground(Color.BLACK);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        txtGetName = createInputField(panel, "Get Product by Name:");
-        JButton btnGet = createButton("Get", this::getByName);
-        panel.add(btnGet);
+        int row = 0;
 
-        txtDeleteId = createInputField(panel, "Delete Product by ID:");
-        JButton btnDelete = createButton("Delete", this::handleDeleteById);
-        panel.add(btnDelete);
+     // Row 1: Get by Name
+        JLabel lblGetName = new JLabel("Get Product by Name:");
+        lblGetName.setForeground(Color.WHITE);
+        gbc.gridx = 0; gbc.gridy = row; panel.add(lblGetName, gbc);
+        gbc.gridx = 1; txtGetName = new JTextField(12); panel.add(txtGetName, gbc);
+        gbc.gridx = 2; JButton btnGet = new JButton("Get"); btnGet.setBackground(Green); panel.add(btnGet, gbc);
+        btnGet.addActionListener(this::getByName);
 
-        JButton btnPost = createButton("Add Product", this::handlePost);
-        JButton btnPut = createButton("Update Product", this::handlePut);
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
-        panel.add(btnPost);
-        panel.add(btnPut);
+        // Row 2: Delete by ID
+        row++;
+        JLabel lblDeleteByID = new JLabel("Delete Product by ID:");
+        lblDeleteByID.setForeground(Color.WHITE);
+        gbc.gridx = 0; gbc.gridy = row; panel.add(lblDeleteByID, gbc);
+        gbc.gridx = 1; txtDeleteId = new JTextField(12); panel.add(txtDeleteId, gbc);
+        gbc.gridx = 2; JButton btnDelete = new JButton("Delete"); btnDelete.setBackground(Red); panel.add(btnDelete, gbc);
+        btnDelete.addActionListener(this::handleDeleteById);
+
+        // Add product fields row by row
+        String[] labels = {"Name", "Type", "Year", "Cost", "Category", "Company ID", "Company Name", "Company Years"};
+        JTextField[] fields = new JTextField[] {
+                txtName = new JTextField(15),
+                txtType = new JTextField(15),
+                txtYear = new JTextField(15),
+                txtCost = new JTextField(15),
+                txtCategory = new JTextField(15),
+                txtCompanyId = new JTextField(15),
+                txtCompanyName = new JTextField(15),
+                txtCompanyYears = new JTextField(15)
+        };
+
+        for (int i = 0; i < labels.length; i++) {
+            row++;
+            JLabel lbl = new JLabel(labels[i] + ":");
+            lbl.setForeground(Color.WHITE); // ✅ Set label text color to white
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(lbl, gbc);
+
+            gbc.gridx = 1; gbc.gridwidth = 2;
+            panel.add(fields[i], gbc);
+            gbc.gridwidth = 1;
+        }
+
+
+        // Add Product Button
+        row++;
+        gbc.gridx = 2; gbc.gridy = row;
+        JButton btnAdd = new JButton("Add Product");
+        btnAdd.setBackground(Blue);
+        panel.add(btnAdd, gbc);
+        btnAdd.addActionListener(this::handlePost);
+
+        // Row: Update by ID
+        row++;
+        JLabel lblUpdate = new JLabel("Update Name by ID:");
+        lblUpdate.setForeground(Color.WHITE);
+        gbc.gridx = 0; gbc.gridy = row;
+        panel.add(lblUpdate, gbc);
+        gbc.gridx = 1;
+        txtUpdateId = new JTextField(12);
+        panel.add(txtUpdateId, gbc);
+        gbc.gridx = 2;
+        JButton btnEdit = new JButton("EDIT");
+        btnEdit.setBackground(Orange);
+        panel.add(btnEdit, gbc);
+        btnEdit.addActionListener(this::handlePut);
+
+        // Row: Delete All & Export
+        row++;
+        gbc.gridx = 1;
+        JButton btnDeleteAll = new JButton("DELETE ALL");
+        btnDeleteAll.setBackground(Red);
+        panel.add(btnDeleteAll, gbc);
+        btnDeleteAll.addActionListener(e -> {
+            try {
+                URL url = new URL("http://localhost:8080/ProjectDistributedBackend/rest/products/all");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("DELETE");
+                if (con.getResponseCode() == 204) {
+                    JOptionPane.showMessageDialog(this, "All products deleted.");
+                    loadAllProducts();
+                }
+                con.disconnect();
+            } catch (Exception ex) {
+                showError("Delete all failed: " + ex.getMessage());
+            }
+        });
+
+        gbc.gridx = 2;
+        JButton btnPrint = new JButton("Print to CSV");
+        btnPrint.setBackground(colorPrint);
+        panel.add(btnPrint, gbc);
+        btnPrint.addActionListener(e -> {
+            try (PrintWriter pw = new PrintWriter(new File("products_export.csv"))) {
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                    pw.print(tableModel.getColumnName(i));
+                    if (i < tableModel.getColumnCount() - 1) pw.print(",");
+                }
+                pw.println();
+                for (int row1 = 0; row1 < tableModel.getRowCount(); row1++) {
+                    for (int col = 0; col < tableModel.getColumnCount(); col++) {
+                        pw.print(tableModel.getValueAt(row1, col));
+                        if (col < tableModel.getColumnCount() - 1) pw.print(",");
+                    }
+                    pw.println();
+                }
+                JOptionPane.showMessageDialog(this, "Exported to products_export.csv");
+            } catch (Exception ex) {
+                showError("Export failed: " + ex.getMessage());
+            }
+        });
 
         return panel;
-    }
-
-    private JTextField createInputField(JPanel panel, String label) {
-        JLabel lbl = new JLabel(label);
-        lbl.setForeground(Color.WHITE);
-        JTextField txt = new JTextField();
-        txt.setMaximumSize(new Dimension(220, 25));
-        panel.add(lbl);
-        panel.add(txt);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
-        return txt;
-    }
-
-    private JButton createButton(String text, java.awt.event.ActionListener handler) {
-        JButton btn = new JButton(text);
-        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn.setMaximumSize(new Dimension(200, 30));
-        btn.addActionListener(handler);
-        return btn;
     }
 
     private JPanel createTablePanel() {
@@ -113,6 +203,7 @@ public class TechnologyFrontEnd extends JFrame {
         panel.add(new JScrollPane(productTable), BorderLayout.CENTER);
         return panel;
     }
+
 
     private void loadAllProducts() {
         try {
@@ -154,6 +245,32 @@ public class TechnologyFrontEnd extends JFrame {
             con.disconnect();
         } catch (Exception ex) {
             showError("Error parsing XML: " + ex.getMessage());
+        }
+    }
+    private void handleExport(ActionEvent e) {
+        try (PrintWriter pw = new PrintWriter(new File("products_export.csv"))) {
+            // Write header
+            for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                pw.print(tableModel.getColumnName(i));
+                if (i < tableModel.getColumnCount() - 1) pw.print(",");
+            }
+            pw.println();
+
+            // Write rows
+            for (int row = 0; row < tableModel.getRowCount(); row++) {
+                for (int col = 0; col < tableModel.getColumnCount(); col++) {
+                    pw.print(tableModel.getValueAt(row, col));
+                    if (col < tableModel.getColumnCount() - 1) pw.print(",");
+                }
+                pw.println();
+            }
+
+            pw.flush();
+            JOptionPane.showMessageDialog(this, "Exported to products_export.csv");
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showError("CSV export failed: " + ex.getMessage());
         }
     }
 
