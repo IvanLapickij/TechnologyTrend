@@ -1,4 +1,5 @@
-package project.rest;
+package frontPack;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 

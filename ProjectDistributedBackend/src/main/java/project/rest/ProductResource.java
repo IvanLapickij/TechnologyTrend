@@ -7,66 +7,76 @@ import javax.ws.rs.core.Response;
 
 @Path("/products")
 public class ProductResource {
-    
+
+    // Return all products wrapped in ProductsWrapper for XML parsing
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Product> getProducts(){
-        return ProductDAO.INSTANCE.getAllProducts();
+    public ProductsWrapper getProducts() {
+        List<Product> productList = ProductDAO.INSTANCE.getAllProducts();
+        ProductsWrapper wrapper = new ProductsWrapper();
+        wrapper.setProducts(productList);
+        return wrapper;
     }
-    
+
+    // Get a single product by ID
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getProductById(@PathParam("id") int id){
+    public Response getProductById(@PathParam("id") int id) {
         Product product = ProductDAO.INSTANCE.getProductById(id);
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(product).build();
     }
-    
+
+    // Get products by name (can return multiple matches)
     @GET
     @Path("name/{name}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getProductByName(@PathParam("name") String name){
+    public Response getProductByName(@PathParam("name") String name) {
         List<Product> products = ProductDAO.INSTANCE.getProductByName(name);
         if (products.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(products).build();
     }
-    
+
+    // Add a new product
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response addProduct(Product product) {
         ProductDAO.INSTANCE.addProduct(product);
         return Response.status(Response.Status.CREATED).build();
     }
-    
+
+    // Update an existing product by ID
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response updateProduct(@PathParam("id") int id, Product updatedProduct) {
-        // Retrieve the existing product
         Product existingProduct = ProductDAO.INSTANCE.getProductById(id);
         if (existingProduct == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        
-        // Update fields based on the provided updatedProduct data.
+
+        // Update fields
         existingProduct.setName(updatedProduct.getName());
         existingProduct.setType(updatedProduct.getType());
         existingProduct.setYear(updatedProduct.getYear());
         existingProduct.setCost(updatedProduct.getCost());
-        existingProduct.setCategoryid(updatedProduct.getCategoryid());
-        
-        // Save the updated product to the database
+        existingProduct.setCategoryName(updatedProduct.getCategoryName());
+
+        if (updatedProduct.getCompany() != null) {
+            existingProduct.setCompany(updatedProduct.getCompany());
+        }
+
         ProductDAO.INSTANCE.updateProduct(existingProduct);
-        
         return Response.ok(existingProduct).build();
-    } 
-    
+    }
+
+    // Delete a product by ID
     @DELETE
     @Path("{id}")
     public Response deleteProduct(@PathParam("id") int id) {
