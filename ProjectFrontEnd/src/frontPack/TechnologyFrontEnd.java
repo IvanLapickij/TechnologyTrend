@@ -122,23 +122,132 @@ public class TechnologyFrontEnd extends JFrame {
         panel.add(btnAdd, gbc);
         btnAdd.addActionListener(this::handlePost);
 
-        // Row: Update by ID
+        // Row: Change Price by ID
         row++;
-        JLabel lblUpdate = new JLabel("Update Name by ID:");
+        JLabel lblUpdate = new JLabel("Change Price by ID:");
         lblUpdate.setForeground(Color.WHITE);
         gbc.gridx = 0; gbc.gridy = row;
         panel.add(lblUpdate, gbc);
+
         gbc.gridx = 1;
-        txtUpdateId = new JTextField(12);
+        txtUpdateId = new JTextField(6);
         panel.add(txtUpdateId, gbc);
+
         gbc.gridx = 2;
-        JButton btnEdit = new JButton("EDIT");
+        JTextField txtNewPrice = new JTextField(6);
+        panel.add(txtNewPrice, gbc);
+
+        row++;
+        gbc.gridx = 2; gbc.gridy = row;
+        JButton btnEdit = new JButton("Change Price");
         btnEdit.setBackground(Orange);
         panel.add(btnEdit, gbc);
-        btnEdit.addActionListener(this::handlePut);
+        btnEdit.addActionListener(e -> {
+            String idText = txtUpdateId.getText().trim();
+            String priceText = txtNewPrice.getText().trim();
+            if (idText.isEmpty() || priceText.isEmpty()) {
+                showError("Enter both ID and new price.");
+                return;
+            }
+            try {
+                int id = Integer.parseInt(idText);
+                double newPrice = Double.parseDouble(priceText);
+
+                // Fetch existing product XML by ID
+                URL getUrl = new URL("http://localhost:8080/ProjectDistributedBackend/rest/products/" + id);
+                HttpURLConnection getCon = (HttpURLConnection) getUrl.openConnection();
+                getCon.setRequestMethod("GET");
+                getCon.setRequestProperty("Accept", "application/xml");
+
+                Product existingProduct = null;
+                if (getCon.getResponseCode() == 200) {
+                    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                    factory.setNamespaceAware(true);
+                    XmlPullParser parser = factory.newPullParser();
+                    parser.setInput(new InputStreamReader(getCon.getInputStream()));
+
+                    existingProduct = new Product();
+                    Company company = new Company();
+                    String tag = "";
+                    int eventType = parser.getEventType();
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        switch (eventType) {
+                            case XmlPullParser.START_TAG:
+                                tag = parser.getName();
+                                if (tag.equals("company")) company = new Company();
+                                break;
+                            case XmlPullParser.TEXT:
+                                String text = parser.getText();
+                                switch (tag) {
+                                    case "productid": existingProduct.setProductid(Integer.parseInt(text)); break;
+                                    case "name": existingProduct.setName(text); break;
+                                    case "type": existingProduct.setType(text); break;
+                                    case "year": existingProduct.setYear(Integer.parseInt(text)); break;
+                                    case "cost": existingProduct.setCost(Double.parseDouble(text)); break;
+                                    case "categoryName": existingProduct.setCategoryName(text); break;
+                                    case "companyID": company.setCompanyID(Integer.parseInt(text)); break;
+                                    case "companyName": company.setCompanyName(text); break;
+                                    case "years": company.setYears(Integer.parseInt(text)); break;
+                                }
+                                break;
+                            case XmlPullParser.END_TAG:
+                                if (parser.getName().equals("company")) {
+                                    existingProduct.setCompany(company);
+                                }
+                                break;
+                        }
+                        eventType = parser.next();
+                    }
+                } else {
+                    showError("Failed to fetch existing product. Code: " + getCon.getResponseCode());
+                    return;
+                }
+                getCon.disconnect();
+
+                existingProduct.setCost(newPrice);
+
+                // Build full XML
+                StringBuilder xml = new StringBuilder();
+                xml.append("<product>");
+                xml.append("<productid>").append(existingProduct.getProductid()).append("</productid>");
+                xml.append("<name>").append(existingProduct.getName()).append("</name>");
+                xml.append("<type>").append(existingProduct.getType()).append("</type>");
+                xml.append("<year>").append(existingProduct.getYear()).append("</year>");
+                xml.append("<cost>").append(existingProduct.getCost()).append("</cost>");
+                xml.append("<categoryName>").append(existingProduct.getCategoryName()).append("</categoryName>");
+                xml.append("<company>");
+                xml.append("<companyID>").append(existingProduct.getCompany().getCompanyID()).append("</companyID>");
+                xml.append("<companyName>").append(existingProduct.getCompany().getCompanyName()).append("</companyName>");
+                xml.append("<years>").append(existingProduct.getCompany().getYears()).append("</years>");
+                xml.append("</company>");
+                xml.append("</product>");
+
+                URL putUrl = new URL("http://localhost:8080/ProjectDistributedBackend/rest/products/" + id);
+                HttpURLConnection putCon = (HttpURLConnection) putUrl.openConnection();
+                putCon.setRequestMethod("PUT");
+                putCon.setRequestProperty("Content-Type", "application/xml");
+                putCon.setDoOutput(true);
+
+                try (OutputStream os = putCon.getOutputStream()) {
+                    os.write(xml.toString().getBytes());
+                    os.flush();
+                }
+
+                if (putCon.getResponseCode() == 200) {
+                    JOptionPane.showMessageDialog(this, "Price updated.");
+                    loadAllProducts();
+                } else {
+                    showError("Update failed. Code: " + putCon.getResponseCode());
+                }
+                putCon.disconnect();
+            } catch (Exception ex) {
+                showError("Error: " + ex.getMessage());
+            }
+        });
 
         // Row: Delete All & Export
-        row++;
+        row += 2;
+        gbc.gridy = row;
         gbc.gridx = 1;
         JButton btnDeleteAll = new JButton("DELETE ALL");
         btnDeleteAll.setBackground(Red);
@@ -162,6 +271,7 @@ public class TechnologyFrontEnd extends JFrame {
         JButton btnPrint = new JButton("Print to CSV");
         btnPrint.setBackground(colorPrint);
         panel.add(btnPrint, gbc);
+        btnPrint.addActionListener(this::handleExport);
         btnPrint.addActionListener(e -> {
             try (PrintWriter pw = new PrintWriter(new File("products_export.csv"))) {
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
