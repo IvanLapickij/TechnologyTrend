@@ -462,6 +462,9 @@ public class TechnologyFrontEnd extends JFrame {
             showError("Exception: " + ex.getMessage());
         }
     }
+    private int generateRandomId() {
+        return (int)(1000 + Math.random() * 9000); // random 4-digit ID
+    }
 
     private void handlePost(ActionEvent e) {
         try {
@@ -473,7 +476,7 @@ public class TechnologyFrontEnd extends JFrame {
 
             String xml = "" +
                     "<product>" +
-                    "<productid>999</productid>" +
+                    "<productid>" + generateRandomId() + "</productid>" +
                     "<name>SmartLight</name>" +
                     "<type>Gadget</type>" +
                     "<year>2024</year>" +

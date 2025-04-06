@@ -124,6 +124,26 @@ public enum ProductDAO {
 
         return products;
     }
+    
+    public int getNextAvailableId() {
+        String query = "SELECT ProductID FROM Products ORDER BY ProductID";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            int expected = 1;
+            while (rs.next()) {
+                int current = rs.getInt("ProductID");
+                if (current != expected) {
+                    return expected; // found a gap
+                }
+                expected++;
+            }
+            return expected; // no gaps found, return next after highest
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // error
+    }
+
 
     // Insert a new product
     public void addProduct(Product product) {
@@ -176,4 +196,14 @@ public enum ProductDAO {
             e.printStackTrace();
         }
     }
+    
+    public void deleteAll() {
+        String query = "DELETE FROM Products";
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

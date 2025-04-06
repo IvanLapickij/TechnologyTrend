@@ -1,9 +1,12 @@
 package project.rest;
 
+import java.net.URI;
 import java.util.List;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 @Path("/products")
 public class ProductResource {
@@ -71,6 +74,18 @@ public class ProductResource {
         ProductDAO.INSTANCE.updateProduct(existingProduct);
         return Response.ok(existingProduct).build();
     }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    public Response addProduct(Product product, @Context UriInfo uriInfo) {
+        int newId = ProductDAO.INSTANCE.getNextAvailableId();
+        product.setProductid(newId);
+        ProductDAO.INSTANCE.addProduct(product);
+
+        URI uri = uriInfo.getAbsolutePathBuilder().path(String.valueOf(newId)).build();
+        return Response.created(uri).build();
+    }
+
 
     // Delete a product by ID
     @DELETE
@@ -79,4 +94,12 @@ public class ProductResource {
         ProductDAO.INSTANCE.deleteProduct(id);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
+    
+    @DELETE
+    @Path("/all")
+    public Response deleteAllProducts() {
+        ProductDAO.INSTANCE.deleteAll();  // You’ll need to add this method to DAO
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
 }
