@@ -1,0 +1,51 @@
+ID,Name,Type,Year,Cost,Category,Company,Company Years
+1,Neo,Drone,2024,300.0,Robotics,Samsung,15
+2,Samsung X6,Smart Watch,2020,350.0,Electronics,Samsung,15
+3,Neo,Mini Drone,2023,150.0,Robotics,Amazon,22
+4,Smart lock,Device,2025,230.0,IOT,Intel,30
+5,Smart lock,Security Device,2024,210.0,IOT,IBM,40
+6,Smart lock,Smart Entry,2025,300.0,IOT,Cisco,26
+7,Power bank,Charger,2025,18000.0,Sustainability,Sony,35
+8,Power bank,FlexiCharge,2024,22000.0,Sustainability,Dell,24
+9,Power bank,QuickCharge,2023,19500.0,Sustainability,HP,33
+10,Tablet,AirPad,2024,450.0,Electronics,Lenovo,21
+11,Tablet,InnovaPad,2024,500.0,Electronics,Asus,17
+12,Tablet,LightTab,2023,420.0,Electronics,Xiaomi,12
+13,Drone,NanoDrone,2024,300.0,Robotics,FutureLogic,12
+14,Drone,Aero,2025,350.0,Robotics,SmartEdge,3
+15,Drone,SkyGlide,2025,400.0,Robotics,BrightWare,5
+16,The Egg,Power bank,2025,19000.0,Sustainability,GreenCore,8
+17,Atto 3,Electric Car,2024,36000.0,Sustainability,TechNova,10
+18,Bixby,Software update,2025,0.0,AI,Apple,20
+19,EcoCharge,Charger,2025,120.0,Sustainability,Microsoft,25
+20,QuantumKey,Smart lock,2025,250.0,IOT,Meta,10
+21,Pulse,Fitness Tracker,2025,180.0,Wearable,Oracle,28
+22,GreenDrive,Electric Scooter,2025,800.0,Sustainability,FutureLogic,12
+23,SmartFrame,Digital Picture Frame,2025,150.0,IOT,Samsung,15
+24,UltraVision,Camera,2024,750.0,Robotics,Apple,20
+25,NextGen Hub,Smart Home Hub,2025,300.0,IOT,Google,18
+26,SonicDrive,Electric Car,2024,40000.0,Sustainability,Microsoft,25
+27,MindSync,VR Headset,2025,600.0,AI,Amazon,22
+28,DataLink,Router,2025,130.0,Networking,Meta,10
+29,SkyCam,Drone,2023,320.0,Robotics,Intel,30
+30,Lockly,Smart lock,2025,240.0,IOT,IBM,40
+31,VoltCharge,Power bank,2025,21000.0,Sustainability,Oracle,28
+32,Neo,Drone Ultra,2025,370.0,Robotics,Cisco,26
+33,Neo,Micro Drone,2022,120.0,Robotics,Sony,35
+34,Neo,Drone Compact,2024,250.0,Robotics,Dell,24
+35,Tablet,SpeedyTab,2025,470.0,Electronics,HP,33
+36,Tablet,EcoTab,2024,390.0,Sustainability,Lenovo,21
+37,Smart lock,NanoLock,2023,199.0,IOT,Asus,17
+38,Drone,SkyWatcher,2025,450.0,Robotics,Xiaomi,12
+39,Neo,Neo Pro Max,2026,399.0,Robotics,GreenCore,8
+40,SmartFrame,Wall Display,2024,180.0,IOT,BrightWare,5
+41,Pulse,Tracker Plus,2024,200.0,Wearable,SmartEdge,3
+42,Tablet,TabX,2025,510.0,Electronics,FutureLogic,12
+43,Power bank,MiniCharge,2024,17000.0,Sustainability,Samsung,15
+44,Smart lock,GateKeeper,2025,275.0,IOT,Apple,20
+45,Neo,AI Drone,2025,410.0,AI,Google,18
+46,Neo,Neo Scout,2024,340.0,Robotics,Microsoft,25
+47,EcoCharge,USB-C Charger,2025,140.0,Sustainability,Amazon,22
+48,DataLink,Router Pro,2024,160.0,Networking,Meta,10
+49,Drone,FlyerZ,2024,290.0,Robotics,Intel,30
+50,Tablet,AlphaTab,2023,460.0,Electronics,IBM,40
