@@ -9,7 +9,7 @@ public enum ProductDAO {
 
     private Connection connection;
 
-    // Initialize the database connection
+    // db connection
     ProductDAO() {
         try {
             Class.forName("org.hsqldb.jdbcDriver");
@@ -19,7 +19,7 @@ public enum ProductDAO {
         }
     }
 
-    // Retrieve all products, including their associated company information
+    // all products & companies
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
         String query = "SELECT p.ProductID, p.Name, p.Type, p.Year, p.Cost, p.CategoryName, p.CompanyID, " +
@@ -52,7 +52,7 @@ public enum ProductDAO {
         return products;
     }
 
-    // Retrieve a product by its ID
+    // productByID
     public Product getProductById(int id) {
         String query = "SELECT p.ProductID, p.Name, p.Type, p.Year, p.Cost, p.CategoryName, p.CompanyID, " +
                        "c.CompanyName, c.Years " +
@@ -88,7 +88,7 @@ public enum ProductDAO {
         return null;
     }
 
-    // Retrieve products by name
+    // productByName
     public List<Product> getProductByName(String name) {
         List<Product> products = new ArrayList<>();
         String query = "SELECT p.ProductID, p.Name, p.Type, p.Year, p.Cost, p.CategoryName, p.CompanyID, " +
@@ -132,20 +132,25 @@ public enum ProductDAO {
             int expected = 1;
             while (rs.next()) {
                 int current = rs.getInt("ProductID");
+                //if there is available(empty id in a column)
                 if (current != expected) {
-                    return expected; // found a gap
+                	//found!
+                    return expected;
                 }
+                //continue searching
                 expected++;
             }
-            return expected; // no gaps found, return next after highest
+            //no space found
+            return expected;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1; // error
+        //something went wrong
+        return -1;
     }
 
 
-    // Insert a new product
+    // addProduct
     public void addProduct(Product product) {
         String query = "INSERT INTO Products (ProductID, Name, Type, Year, Cost, CompanyID, CategoryName) " +
                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -165,7 +170,7 @@ public enum ProductDAO {
         }
     }
 
-    // Update an existing product
+    // updateProduct
     public void updateProduct(Product product) {
         String query = "UPDATE Products SET Name = ?, Type = ?, Year = ?, Cost = ?, CompanyID = ?, CategoryName = ? " +
                        "WHERE ProductID = ?";
@@ -185,7 +190,7 @@ public enum ProductDAO {
         }
     }
 
-    // Delete a product by ID
+    // delete Product
     public void deleteProduct(int id) {
         String query = "DELETE FROM Products WHERE ProductID = ?";
 
@@ -196,7 +201,7 @@ public enum ProductDAO {
             e.printStackTrace();
         }
     }
-    
+    //del all
     public void deleteAll() {
         String query = "DELETE FROM Products";
         try (Statement stmt = connection.createStatement()) {

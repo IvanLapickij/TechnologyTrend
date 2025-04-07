@@ -1,1 +1,6 @@
+
+//Original link, returns all products
 http://localhost:8080/ProjectDistributedBackend/rest/products
+
+--Search products b y name
+http://localhost:8080/ProjectDistributedBackend/rest/products/name/Neo

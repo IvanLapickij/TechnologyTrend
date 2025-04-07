@@ -11,7 +11,7 @@ import javax.ws.rs.core.UriInfo;
 @Path("/products")
 public class ProductResource {
 
-    // Return all products wrapped in ProductsWrapper for XML parsing
+    // GET all products wrapped in ProductsWrapper for XML parsing
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public ProductsWrapper getProducts() {
@@ -21,7 +21,7 @@ public class ProductResource {
         return wrapper;
     }
 
-    // Get a single product by ID
+    // GET porduct by productID
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -33,7 +33,7 @@ public class ProductResource {
         return Response.ok(product).build();
     }
 
-    // Get products by name (can return multiple matches)
+    // GET products by name
     @GET
     @Path("name/{name}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -49,7 +49,7 @@ public class ProductResource {
     }
 
 
-    // Update an existing product by ID
+    // PUT/update product by ID
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -60,7 +60,7 @@ public class ProductResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        // Update fields
+        // updating fields
         existingProduct.setName(updatedProduct.getName());
         existingProduct.setType(updatedProduct.getType());
         existingProduct.setYear(updatedProduct.getYear());
@@ -75,6 +75,7 @@ public class ProductResource {
         return Response.ok(existingProduct).build();
     }
     
+    //POST/ addProduct
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addProduct(Product product, @Context UriInfo uriInfo) {
@@ -87,7 +88,7 @@ public class ProductResource {
     }
 
 
-    // Delete a product by ID
+    // DELETE by productID
     @DELETE
     @Path("{id}")
     public Response deleteProduct(@PathParam("id") int id) {
@@ -95,10 +96,11 @@ public class ProductResource {
         return Response.status(Response.Status.NO_CONTENT).build();
     }
     
+    //DELETE ALL
     @DELETE
     @Path("/all")
     public Response deleteAllProducts() {
-        ProductDAO.INSTANCE.deleteAll();  // You’ll need to add this method to DAO
+        ProductDAO.INSTANCE.deleteAll();
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 

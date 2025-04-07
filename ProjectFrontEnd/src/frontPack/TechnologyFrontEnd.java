@@ -15,7 +15,7 @@ import java.net.URLEncoder;
 
 public class TechnologyFrontEnd extends JFrame {
 
-    private JTextField txtGetName, txtDeleteId, txtName, txtType, txtYear, txtCost, txtCategory, txtCompanyId, txtCompanyName, txtCompanyYears, txtUpdateId;
+    private JTextField txtGetName, txtDeleteId, txtName, txtType, txtYear, txtCost, txtCategory, txtCompanyId, txtUpdateId;
     private JTable productTable;
     private DefaultTableModel tableModel;
 
@@ -89,16 +89,14 @@ public class TechnologyFrontEnd extends JFrame {
         btnDelete.addActionListener(this::handleDeleteById);
 
         // Add product fields row by row
-        String[] labels = {"Name", "Type", "Year", "Cost", "Category", "Company ID", "Company Name", "Company Years"};
+        String[] labels = {"Name", "Type", "Year", "Cost", "Category", "Company ID"};
         JTextField[] fields = new JTextField[] {
                 txtName = new JTextField(15),
                 txtType = new JTextField(15),
                 txtYear = new JTextField(15),
                 txtCost = new JTextField(15),
                 txtCategory = new JTextField(15),
-                txtCompanyId = new JTextField(15),
-                txtCompanyName = new JTextField(15),
-                txtCompanyYears = new JTextField(15)
+                txtCompanyId = new JTextField(15)
         };
 
         for (int i = 0; i < labels.length; i++) {
@@ -468,26 +466,46 @@ public class TechnologyFrontEnd extends JFrame {
 
     private void handlePost(ActionEvent e) {
         try {
+            // Gather input from text fields
+            String name = txtName.getText().trim();
+            String type = txtType.getText().trim();
+            String yearStr = txtYear.getText().trim();
+            String costStr = txtCost.getText().trim();
+            String category = txtCategory.getText().trim();
+            String companyIdStr = txtCompanyId.getText().trim();
+
+            // Validate inputs
+            if (name.isEmpty() || type.isEmpty() || yearStr.isEmpty() || costStr.isEmpty() ||
+                category.isEmpty() || companyIdStr.isEmpty()) {
+                showError("Please fill in all product fields.");
+                return;
+            }
+
+            int year = Integer.parseInt(yearStr);
+            double cost = Double.parseDouble(costStr);
+            int companyId = Integer.parseInt(companyIdStr);
+            int productId = generateRandomId(); // or request from server if needed
+
+            // XML body to send in POST
+            String xml = "" +
+                    "<product>" +
+                    "<productid>" + productId + "</productid>" +
+                    "<name>" + name + "</name>" +
+                    "<type>" + type + "</type>" +
+                    "<year>" + year + "</year>" +
+                    "<cost>" + cost + "</cost>" +
+                    "<categoryName>" + category + "</categoryName>" +
+                    "<company>" +
+                    "<companyID>" + companyId + "</companyID>" +
+                    "</company>" +
+                    "</product>";
+
+            // Send HTTP POST request
             URL url = new URL("http://localhost:8080/ProjectDistributedBackend/rest/products");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/xml");
             con.setDoOutput(true);
-
-            String xml = "" +
-                    "<product>" +
-                    "<productid>" + generateRandomId() + "</productid>" +
-                    "<name>SmartLight</name>" +
-                    "<type>Gadget</type>" +
-                    "<year>2024</year>" +
-                    "<cost>250</cost>" +
-                    "<categoryName>Home Automation</categoryName>" +
-                    "<company>" +
-                    "<companyID>1</companyID>" +
-                    "<companyName>BrightTech</companyName>" +
-                    "<years>10</years>" +
-                    "</company>" +
-                    "</product>";
 
             try (OutputStream os = con.getOutputStream()) {
                 os.write(xml.getBytes());
@@ -495,16 +513,18 @@ public class TechnologyFrontEnd extends JFrame {
             }
 
             if (con.getResponseCode() == 201) {
-                JOptionPane.showMessageDialog(this, "Product added.");
+                JOptionPane.showMessageDialog(this, "Product added successfully.");
                 loadAllProducts();
             } else {
                 showError("POST failed. Code: " + con.getResponseCode());
             }
+
             con.disconnect();
         } catch (Exception ex) {
             showError("Exception: " + ex.getMessage());
         }
     }
+
 
     private void handlePut(ActionEvent e) {
         try {

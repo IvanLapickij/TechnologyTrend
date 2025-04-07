@@ -9,11 +9,13 @@ public class Company {
  private String companyName;
  private int years;
 
+ 
  public Company() {
-     // JAXB requires a no-arg constructor
- }
+	super();
+	// TODO Auto-generated constructor stub
+}
 
- public int getCompanyID() {
+public int getCompanyID() {
      return companyID;
  }
 

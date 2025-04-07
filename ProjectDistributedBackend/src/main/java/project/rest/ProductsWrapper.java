@@ -10,10 +10,11 @@ public class ProductsWrapper {
     private List<Product> products;
 
     public ProductsWrapper() {
-        // JAXB requires a no-arg constructor
-    }
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-    @XmlElement(name = "product")
+	@XmlElement(name = "product")
     public List<Product> getProducts() {
         return products;
     }

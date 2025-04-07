@@ -10,12 +10,13 @@ public class Product {
     private String name;
     private String type;
     private int year;
-    private double cost; // or BigDecimal if you're using it in backend with DECIMAL
+    private double cost;
     private String categoryName;
     private Company company;
 
     public Product() {
-        // JAXB requires a no-arg constructor
+    	super();
+    	// TODO Auto-generated constructor stub
     }
 
     public int getProductid() {
