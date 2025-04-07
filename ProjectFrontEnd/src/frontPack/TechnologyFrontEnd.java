@@ -88,7 +88,7 @@ public class TechnologyFrontEnd extends JFrame {
         gbc.gridx = 2; JButton btnDelete = new JButton("Delete"); btnDelete.setBackground(Red); panel.add(btnDelete, gbc);
         btnDelete.addActionListener(this::handleDeleteById);
 
-        // Add product fields row by row
+        // add product fields row by row
         String[] labels = {"Name", "Type", "Year", "Cost", "Category", "Company ID"};
         JTextField[] fields = new JTextField[] {
                 txtName = new JTextField(15),
@@ -102,7 +102,7 @@ public class TechnologyFrontEnd extends JFrame {
         for (int i = 0; i < labels.length; i++) {
             row++;
             JLabel lbl = new JLabel(labels[i] + ":");
-            lbl.setForeground(Color.WHITE); // ✅ Set label text color to white
+            lbl.setForeground(Color.WHITE);
             gbc.gridx = 0; gbc.gridy = row;
             panel.add(lbl, gbc);
 
@@ -112,7 +112,7 @@ public class TechnologyFrontEnd extends JFrame {
         }
 
 
-        // Add Product Button
+        // adds Product Button
         row++;
         gbc.gridx = 2; gbc.gridy = row;
         JButton btnAdd = new JButton("Add Product");
@@ -120,7 +120,7 @@ public class TechnologyFrontEnd extends JFrame {
         panel.add(btnAdd, gbc);
         btnAdd.addActionListener(this::handlePost);
 
-        // Row: Change Price by ID
+        //change Price by ID
         row++;
         JLabel lblUpdate = new JLabel("Change Price by ID:");
         lblUpdate.setForeground(Color.WHITE);
@@ -151,7 +151,7 @@ public class TechnologyFrontEnd extends JFrame {
                 int id = Integer.parseInt(idText);
                 double newPrice = Double.parseDouble(priceText);
 
-                // Fetch existing product XML by ID
+                // fetches existing product XML by ID
                 URL getUrl = new URL("http://localhost:8080/ProjectDistributedBackend/rest/products/" + id);
                 HttpURLConnection getCon = (HttpURLConnection) getUrl.openConnection();
                 getCon.setRequestMethod("GET");
@@ -204,7 +204,7 @@ public class TechnologyFrontEnd extends JFrame {
 
                 existingProduct.setCost(newPrice);
 
-                // Build full XML
+                // builds XML
                 StringBuilder xml = new StringBuilder();
                 xml.append("<product>");
                 xml.append("<productid>").append(existingProduct.getProductid()).append("</productid>");
@@ -357,14 +357,14 @@ public class TechnologyFrontEnd extends JFrame {
     }
     private void handleExport(ActionEvent e) {
         try (PrintWriter pw = new PrintWriter(new File("products_export.csv"))) {
-            // Write header
+            // write header
             for (int i = 0; i < tableModel.getColumnCount(); i++) {
                 pw.print(tableModel.getColumnName(i));
                 if (i < tableModel.getColumnCount() - 1) pw.print(",");
             }
             pw.println();
 
-            // Write rows
+            // writes rows
             for (int row = 0; row < tableModel.getRowCount(); row++) {
                 for (int col = 0; col < tableModel.getColumnCount(); col++) {
                     pw.print(tableModel.getValueAt(row, col));
@@ -460,13 +460,10 @@ public class TechnologyFrontEnd extends JFrame {
             showError("Exception: " + ex.getMessage());
         }
     }
-    private int generateRandomId() {
-        return (int)(1000 + Math.random() * 9000); // random 4-digit ID
-    }
 
     private void handlePost(ActionEvent e) {
         try {
-            // Gather input from text fields
+            // get input from textfields
             String name = txtName.getText().trim();
             String type = txtType.getText().trim();
             String yearStr = txtYear.getText().trim();
@@ -474,7 +471,7 @@ public class TechnologyFrontEnd extends JFrame {
             String category = txtCategory.getText().trim();
             String companyIdStr = txtCompanyId.getText().trim();
 
-            // Validate inputs
+            // validate inputs
             if (name.isEmpty() || type.isEmpty() || yearStr.isEmpty() || costStr.isEmpty() ||
                 category.isEmpty() || companyIdStr.isEmpty()) {
                 showError("Please fill in all product fields.");
@@ -484,12 +481,10 @@ public class TechnologyFrontEnd extends JFrame {
             int year = Integer.parseInt(yearStr);
             double cost = Double.parseDouble(costStr);
             int companyId = Integer.parseInt(companyIdStr);
-            int productId = generateRandomId(); // or request from server if needed
 
             // XML body to send in POST
             String xml = "" +
                     "<product>" +
-                    "<productid>" + productId + "</productid>" +
                     "<name>" + name + "</name>" +
                     "<type>" + type + "</type>" +
                     "<year>" + year + "</year>" +
@@ -519,48 +514,6 @@ public class TechnologyFrontEnd extends JFrame {
                 showError("POST failed. Code: " + con.getResponseCode());
             }
 
-            con.disconnect();
-        } catch (Exception ex) {
-            showError("Exception: " + ex.getMessage());
-        }
-    }
-
-
-    private void handlePut(ActionEvent e) {
-        try {
-            int id = 999; // Update the one we added
-            URL url = new URL("http://localhost:8080/ProjectDistributedBackend/rest/products/" + id);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("PUT");
-            con.setRequestProperty("Content-Type", "application/xml");
-            con.setDoOutput(true);
-
-            String xml = "" +
-                    "<product>" +
-                    "<productid>999</productid>" +
-                    "<name>UpdatedSmartLight</name>" +
-                    "<type>Gadget</type>" +
-                    "<year>2025</year>" +
-                    "<cost>300</cost>" +
-                    "<categoryName>Smart Home</categoryName>" +
-                    "<company>" +
-                    "<companyID>1</companyID>" +
-                    "<companyName>BrightTech</companyName>" +
-                    "<years>11</years>" +
-                    "</company>" +
-                    "</product>";
-
-            try (OutputStream os = con.getOutputStream()) {
-                os.write(xml.getBytes());
-                os.flush();
-            }
-
-            if (con.getResponseCode() == 200) {
-                JOptionPane.showMessageDialog(this, "Product updated.");
-                loadAllProducts();
-            } else {
-                showError("PUT failed. Code: " + con.getResponseCode());
-            }
             con.disconnect();
         } catch (Exception ex) {
             showError("Exception: " + ex.getMessage());
